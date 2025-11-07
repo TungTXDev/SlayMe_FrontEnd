@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import moment from 'moment-timezone'; // Import moment-timezone
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import moment from "moment-timezone"; // Import moment-timezone
 
 export default function Notification({ navigation }) {
   const userId = useSelector((state) => state.auth.user?.id);
@@ -13,26 +19,28 @@ export default function Notification({ navigation }) {
 
   useEffect(() => {
     if (!userId) {
-      setError('Vui lòng đăng nhập để xem thông báo.');
+      setError("Vui lòng đăng nhập để xem thông báo.");
       setLoading(false);
       return;
     }
 
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`http://localhost:8082/service-orders/getNotification/${userId}`);
+        const response = await axios.get(
+          `http://192.168.1.12:9999/service-orders/getNotification/${userId}`
+        );
 
         if (response.data && Array.isArray(response.data.orders)) {
           setData(response.data.orders);
         } else {
-          console.error('Dữ liệu không đúng cấu trúc:', response.data);
-          setError('Dữ liệu không hợp lệ.');
+          console.error("Dữ liệu không đúng cấu trúc:", response.data);
+          setError("Dữ liệu không hợp lệ.");
         }
 
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching notifications:', err);
-        setError('Không thể tải thông báo.');
+        console.error("Error fetching notifications:", err);
+        setError("Không thể tải thông báo.");
         setLoading(false);
       }
     };
@@ -64,19 +72,28 @@ export default function Notification({ navigation }) {
         data.map((notification, index) => (
           <View key={index} style={styles.notificationCard}>
             <Text style={styles.serviceName}>
-              Dịch vụ:  {notification.services[0]?.serviceName}
+              Dịch vụ: {notification.services[0]?.serviceName}
             </Text>
-            <Text style={styles.serviceDetails}>Cửa hàng: {notification.storeName}</Text>
             <Text style={styles.serviceDetails}>
-              Thời gian: {moment(notification.schedule).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY HH:mm:ss')}
+              Cửa hàng: {notification.storeName}
             </Text>
-            <Text style={styles.serviceDetails}>Địa điểm: {notification.location}</Text>
+            <Text style={styles.serviceDetails}>
+              Thời gian:{" "}
+              {moment(notification.schedule)
+                .tz("Asia/Ho_Chi_Minh")
+                .format("DD/MM/YYYY HH:mm:ss")}
+            </Text>
+            <Text style={styles.serviceDetails}>
+              Địa điểm: {notification.location}
+            </Text>
             <Text style={styles.status}>Trạng thái: {notification.status}</Text>
 
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
-                navigation.navigate('ServiceDetail', { serviceId: notification.id });
+                navigation.navigate("ServiceDetail", {
+                  serviceId: notification.id,
+                });
               }}
             >
               <Text style={styles.buttonText}>Xem chi tiết</Text>
@@ -94,68 +111,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 30,
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    color: '#333',
+    color: "#333",
   },
   notificationCard: {
-    backgroundColor: '#F6C7F5',
+    backgroundColor: "#F6C7F5",
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
   },
   serviceName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   serviceDetails: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
     marginTop: 5,
   },
   status: {
     fontSize: 14,
-    color: 'red',
+    color: "red",
     marginTop: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   button: {
     marginTop: 15,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     paddingVertical: 10,
     borderRadius: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   noDataText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
-    color: '#888',
+    color: "#888",
   },
 });

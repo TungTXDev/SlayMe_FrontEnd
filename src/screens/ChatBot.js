@@ -1,14 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator, 
-  KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard 
-} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function ChatBot() {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef(null);
 
@@ -16,12 +25,12 @@ export function ChatBot() {
   useEffect(() => {
     const loadMessages = async () => {
       try {
-        const storedMessages = await AsyncStorage.getItem('chatMessages');
+        const storedMessages = await AsyncStorage.getItem("chatMessages");
         if (storedMessages) {
-          setMessages(JSON.parse(storedMessages));  // Cập nhật state từ dữ liệu lưu trữ
+          setMessages(JSON.parse(storedMessages)); // Cập nhật state từ dữ liệu lưu trữ
         }
       } catch (error) {
-        console.error('Error loading messages from AsyncStorage:', error);
+        console.error("Error loading messages from AsyncStorage:", error);
       }
     };
     loadMessages();
@@ -32,7 +41,7 @@ export function ChatBot() {
     const newMessage = { id: Date.now().toString(), text: message, sender };
     setMessages((prevMessages) => {
       const updatedMessages = [...prevMessages, newMessage];
-      AsyncStorage.setItem('chatMessages', JSON.stringify(updatedMessages));  // Lưu tin nhắn vào AsyncStorage
+      AsyncStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // Lưu tin nhắn vào AsyncStorage
       return updatedMessages;
     });
 
@@ -46,51 +55,62 @@ export function ChatBot() {
   const sendMessage = async () => {
     if (input.trim().length === 0) return;
 
-    const userMessage = { id: Date.now().toString(), text: input, sender: 'user' };
+    const userMessage = {
+      id: Date.now().toString(),
+      text: input,
+      sender: "user",
+    };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
-    setInput('');  // Xóa trường input
+    setInput(""); // Xóa trường input
 
     // Lưu tin nhắn người dùng vào AsyncStorage
-    AsyncStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
+    AsyncStorage.setItem("chatMessages", JSON.stringify(updatedMessages));
 
     // Bắt đầu trạng thái loading
     setIsLoading(true);
 
     // Gửi yêu cầu tới API để lấy phản hồi từ ChatBot
     try {
-      const response = await fetch('http://localhost:8082/user/chatBot', {
-        method: 'POST',
+      const response = await fetch("http://192.168.1.12:9999/user/chatBot", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ question: input }),
       });
 
       if (!response.ok) {
-        throw new Error('Error fetching response from chatBot API');
+        throw new Error("Error fetching response from chatBot API");
       }
 
       const data = await response.json();
-      displayMessage('AI', data.message);
-
+      displayMessage("AI", data.message);
     } catch (error) {
-      console.error('Error sending message to chatBot:', error);
-      displayMessage('AI', 'Oops, something went wrong. Please try again later.');
+      console.error("Error sending message to chatBot:", error);
+      displayMessage(
+        "AI",
+        "Oops, something went wrong. Please try again later."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const renderMessage = ({ item }) => (
-    <View style={[styles.messageContainer, item.sender === 'user' ? styles.userMessage : styles.botMessage]}>
+    <View
+      style={[
+        styles.messageContainer,
+        item.sender === "user" ? styles.userMessage : styles.botMessage,
+      ]}
+    >
       <Text style={styles.messageText}>{item.text}</Text>
     </View>
   );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Điều chỉnh vị trí khi bàn phím xuất hiện
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // Điều chỉnh vị trí khi bàn phím xuất hiện
       style={styles.container}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -98,9 +118,9 @@ export function ChatBot() {
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>SlayMe Brain 🤖</Text>
           </View>
-          
+
           <FlatList
-            ref={flatListRef}  // Gán ref cho FlatList
+            ref={flatListRef} // Gán ref cho FlatList
             data={messages}
             renderItem={renderMessage}
             keyExtractor={(item) => item.id}
@@ -139,12 +159,17 @@ export function ChatBot() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f4f4', padding: 10, marginTop: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: "#f4f4f4",
+    padding: 10,
+    marginTop: 40,
+  },
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'black', // Màu đỏ giống ảnh
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "black", // Màu đỏ giống ảnh
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderTopLeftRadius: 10,
@@ -152,31 +177,48 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    textTransform: 'uppercase', // Chữ in hoa
+    fontWeight: "bold",
+    color: "white",
+    textTransform: "uppercase", // Chữ in hoa
   },
-  chatDisplay: { flexGrow: 1, justifyContent: 'flex-end' },
-  messageContainer: { padding: 10, marginVertical: 5, borderRadius: 10, maxWidth: '80%' },
-  userMessage: { backgroundColor: '#FF69B4', alignSelf: 'flex-end' },
-  botMessage: { backgroundColor: '#0078FF', alignSelf: 'flex-start' },
-  messageText: { color: 'white', fontSize: 16 },
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 30, paddingHorizontal: 10, marginVertical: 10 },
+  chatDisplay: { flexGrow: 1, justifyContent: "flex-end" },
+  messageContainer: {
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    maxWidth: "80%",
+  },
+  userMessage: { backgroundColor: "#FF69B4", alignSelf: "flex-end" },
+  botMessage: { backgroundColor: "#0078FF", alignSelf: "flex-start" },
+  messageText: { color: "white", fontSize: 16 },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 30,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+  },
   input: { flex: 1, height: 50, fontSize: 16 },
-  sendButton: { backgroundColor: '#0078FF', padding: 10, borderRadius: 50, marginLeft: 10 },
+  sendButton: {
+    backgroundColor: "#0078FF",
+    padding: 10,
+    borderRadius: 50,
+    marginLeft: 10,
+  },
 
   spinner: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1,
   },
-  text: { color: 'white', fontSize: 18, marginTop: 10 }
+  text: { color: "white", fontSize: 18, marginTop: 10 },
 });
 
 export default ChatBot;

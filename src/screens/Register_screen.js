@@ -36,20 +36,21 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    axios.post("http://localhost:8082/auth/sign-up", {
-      account: {
-        email: email,
-        password: password,
-      },
-      profile: {
-        name: name,
-        phone: phone,
-        avatar: "",
-      },
-      role: 3,  
-      status: 1 
-    })
-      .then(res => {
+    axios
+      .post("http://192.168.1.12:9999/auth/sign-up", {
+        account: {
+          email: email,
+          password: password,
+        },
+        profile: {
+          name: name,
+          phone: phone,
+          avatar: "",
+        },
+        role: 3,
+        status: 1,
+      })
+      .then((res) => {
         console.log(res);
         alert("Đăng ký thành công");
         navigation.navigate("Login");
@@ -59,7 +60,7 @@ export default function RegisterScreen({ navigation }) {
           error.response?.data?.message || "Đăng ký thất bại";
         console.error("Lỗi:", errorMessage);
         setErrorMessage(errorMessage); // Lưu lỗi vào state để hiển thị
-        setModalVisible(true); 
+        setModalVisible(true);
       });
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,47 +6,48 @@ import {
   StyleSheet,
   Button,
   ScrollView,
-  TextInput
-} from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+  TextInput,
+} from "react-native";
+import { Calendar } from "react-native-calendars";
+import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 export default function RequestOrder({ navigation }) {
-  const [selectedValue, setSelectedValue] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [stores, setStores] = useState([]);
-  const [selectedStore, setSelectedStore] = useState('');
+  const [selectedStore, setSelectedStore] = useState("");
   const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState('');
+  const [selectedService, setSelectedService] = useState("");
 
   const [selectedDate, setSelectedDate] = useState(null); // Lưu trữ ngày đã chọn
   const [selectedTime, setSelectedTime] = useState(null); // Lưu trữ giờ đã chọn
   const [showTimePicker, setShowTimePicker] = useState(false); // Trạng thái hiển thị time picker
 
-  const userName = useSelector(state => state.auth.user?.name);
-  const userId = useSelector(state => state.auth.user?.id);
+  const userName = useSelector((state) => state.auth.user?.name);
+  const userId = useSelector((state) => state.auth.user?.id);
 
   const dispatch = useDispatch();
-
 
   // Hàm lấy danh sách cửa hàng
   const getAllStore = async () => {
     try {
-      const response = await axios.get('http://localhost:8082/store/listStore');
+      const response = await axios.get(
+        "http://192.168.1.12:9999/store/listStore"
+      );
       setStores(response.data);
     } catch (error) {
-      console.error('Error fetching store data:', error);
+      console.error("Error fetching store data:", error);
     }
   };
 
   const getServicesForStore = (storeId) => {
-    const store = stores.find((s) => s._id === storeId);  // Tìm cửa hàng theo ID
+    const store = stores.find((s) => s._id === storeId); // Tìm cửa hàng theo ID
     if (store) {
-      setServices(store.services);  // Cập nhật dịch vụ của cửa hàng đã chọn
+      setServices(store.services); // Cập nhật dịch vụ của cửa hàng đã chọn
     }
   };
 
@@ -79,39 +80,42 @@ export default function RequestOrder({ navigation }) {
   };
 
   const createOrder = async () => {
-    const selectedServiceDetails = services.find(service => service._id === selectedService);
+    const selectedServiceDetails = services.find(
+      (service) => service._id === selectedService
+    );
 
     if (!selectedServiceDetails) {
-      console.error('Service not found');
+      console.error("Service not found");
       return;
     }
 
     const orderData = {
       storeId: selectedStore,
-      services: [{
-        serviceId: selectedService,
-        service_name: selectedServiceDetails.service_name,  // Tên dịch vụ
-        service_price: selectedServiceDetails.service_price, // Giá dịch vụ
-        slot_service: selectedServiceDetails.slot_service    // Thời gian dịch vụ
-      }],
-      orderDate: selectedDate + ' ' + selectedTime,  // Định dạng ngày và giờ
+      services: [
+        {
+          serviceId: selectedService,
+          service_name: selectedServiceDetails.service_name, // Tên dịch vụ
+          service_price: selectedServiceDetails.service_price, // Giá dịch vụ
+          slot_service: selectedServiceDetails.slot_service, // Thời gian dịch vụ
+        },
+      ],
+      orderDate: selectedDate + " " + selectedTime, // Định dạng ngày và giờ
     };
 
     try {
       const response = await axios.post(
-        `http://localhost:8082/service-orders/create-order/${userId}`,
+        `http://192.168.1.12:9999/service-orders/create-order/${userId}`,
         orderData
       );
-      console.log('Order created successfully:', response.data);
-      // alert(response.data.message);  
-      alert('Đặt lịch thành công!');
-      navigation.navigate('HomeScreen');
+      console.log("Order created successfully:", response.data);
+      // alert(response.data.message);
+      alert("Đặt lịch thành công!");
+      navigation.navigate("HomeScreen");
     } catch (error) {
-      console.error('Error creating order:', error);
-      alert('Có lỗi xảy ra khi tạo đơn hàng!');
+      console.error("Error creating order:", error);
+      alert("Có lỗi xảy ra khi tạo đơn hàng!");
     }
   };
-
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -148,7 +152,11 @@ export default function RequestOrder({ navigation }) {
           style={styles.picker}
         >
           {services.map((service) => (
-            <Picker.Item key={service._id} label={service.service_name} value={service._id} />
+            <Picker.Item
+              key={service._id}
+              label={service.service_name}
+              value={service._id}
+            />
           ))}
         </Picker>
       </TouchableOpacity>
@@ -161,7 +169,9 @@ export default function RequestOrder({ navigation }) {
         <View style={styles.calendarContainer}>
           <Calendar
             onDayPress={onDayPress}
-            markedDates={{ [selectedDate]: { selected: true, selectedColor: 'blue' } }}
+            markedDates={{
+              [selectedDate]: { selected: true, selectedColor: "blue" },
+            }}
           />
         </View>
         {/* Hiển thị nút chọn giờ */}
@@ -169,7 +179,10 @@ export default function RequestOrder({ navigation }) {
           <Text style={styles.infoText}>Đã chọn ngày: {selectedDate}</Text>
         )}
         {selectedDate && !selectedTime && (
-          <TouchableOpacity style={styles.normalDayButton} onPress={() => setShowTimePicker(true)}>
+          <TouchableOpacity
+            style={styles.normalDayButton}
+            onPress={() => setShowTimePicker(true)}
+          >
             <Text>Chọn giờ</Text>
           </TouchableOpacity>
         )}
@@ -206,50 +219,50 @@ export default function RequestOrder({ navigation }) {
 
       {/* Note */}
       <Text style={styles.note}>Đến nơi thanh toán, huỷ lịch không sao</Text>
-    </ScrollView >
+    </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     flexGrow: 1,
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
   },
   listItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     // marginBottom: 20, // Đảm bảo có khoảng cách giữa các phần tử
   },
   searchBar: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     paddingLeft: 10,
   },
   picker: {
     marginTop: -70,
-    width: '100%', // Đảm bảo Picker chiếm toàn bộ chiều rộng
+    width: "100%", // Đảm bảo Picker chiếm toàn bộ chiều rộng
   },
   dateTimeContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
   },
   calendarContainer: {
     marginBottom: 15,
   },
   normalDayButton: {
-    backgroundColor: 'lightgray',
+    backgroundColor: "lightgray",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
@@ -257,10 +270,10 @@ const styles = StyleSheet.create({
   note: {
     fontSize: 12,
     marginTop: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   bookButton: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
   },
   infoText: {
     marginTop: 10,
@@ -268,7 +281,7 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
   },
 });

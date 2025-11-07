@@ -26,7 +26,7 @@ export default function Login({ navigation }) {
   const dispatch = useDispatch();
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:8082/auth/sign-in", {
+      const res = await axios.post("http://192.168.1.12:9999/auth/sign-in", {
         identifier: identifier,
         password: password,
       });
@@ -54,15 +54,21 @@ export default function Login({ navigation }) {
 
   const handleForgotPassword = async () => {
     try {
-      const res = await axios.post("http://localhost:8082/user/forget-password", {
-        email: email
-      });
+      const res = await axios.post(
+        "http://192.168.1.12:9999/user/forget-password",
+        {
+          email: email,
+        }
+      );
       console.log(res.data.message);
       setCodeSent(true);
       Alert.alert("Mã xác thực", "Mã xác thực đã được gửi đến email của bạn.");
     } catch (error) {
       console.log(error.response ? error.response.data : error);
-      Alert.alert("Lỗi", "Không thể gửi mã xác thực. Vui lòng kiểm tra lại email.");
+      Alert.alert(
+        "Lỗi",
+        "Không thể gửi mã xác thực. Vui lòng kiểm tra lại email."
+      );
     }
   };
 
@@ -129,7 +135,6 @@ export default function Login({ navigation }) {
           <Icon name="facebook" size={24} color="#4267B2" style={styles.icon} />
           <Text style={styles.socialButtonText}>Continue with Facebook</Text>
         </TouchableOpacity>
-
       </View>
       <Text
         style={styles.termsForgotPass}
@@ -383,8 +388,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   viewImage: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 20,
   },
 });

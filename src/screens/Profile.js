@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { logout } from "../redux/authSlice";
+import { API_ROOT } from "../utils/constant";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -34,7 +35,7 @@ export default function Profile({ navigation }) {
 
   const userInfoDetail = async () => {
     try {
-      const res = await axios.get(`http://192.168.1.12:9999/user/${userId}`);
+      const res = await axios.get(`${API_ROOT}/user/${userId}`);
       setUserDetails(res.data);
       console.log("User details fetched:", res.data);
     } catch (error) {
@@ -45,7 +46,7 @@ export default function Profile({ navigation }) {
   const getQuizByUserId = async () => {
     try {
       const res = await axios.get(
-        `http://192.168.1.12:9999/quiz/getQuizByUserId/${userId}`
+        `${API_ROOT}/quiz/getQuizByUserId/${userId}`
       );
       setQuizData(res.data);
       console.log("Quizzes fetched:", res.data);
@@ -56,7 +57,7 @@ export default function Profile({ navigation }) {
 
   const getQuizById = async (quizId) => {
     try {
-      const res = await axios.get(`http://192.168.1.12:9999/quiz/${quizId}`);
+      const res = await axios.get(`${API_ROOT}/quiz/${quizId}`);
       setSelectedQuiz(res.data);
       console.log("Quiz details fetched:", res.data);
       setModalVisible(true); // Hiển thị modal khi lấy thông tin quiz thành công
@@ -67,7 +68,7 @@ export default function Profile({ navigation }) {
 
   const handleLogout = async () => {
     axios
-      .post("http://192.168.1.12:9999/auth/sign-out")
+      .post(`${API_ROOT}/auth/sign-out`)
       .then(async (res) => {
         // console.log(res.data.message);
 

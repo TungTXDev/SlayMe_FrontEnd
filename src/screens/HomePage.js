@@ -14,6 +14,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import SLAYME from "../../assets/SLAYME.svg";
+import { API_ROOT } from "../utils/constant";
 
 const HomeScreen = ({ navigation }) => {
   const [stores, setStores] = useState([]);
@@ -32,7 +33,7 @@ const HomeScreen = ({ navigation }) => {
   const getAllStore = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.1.12:9999/store/listStore"
+        `${API_ROOT}/store/listStore`
       );
       setStores(response.data || []);
       setFilteredStores(response.data || []);

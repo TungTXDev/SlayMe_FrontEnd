@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/authSlice";
 import axios from "axios";
 import SLAYME from "../../assets/SLAYME.svg";
+import { API_ROOT } from "../utils/constant";
 
 export default function Login({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,7 +27,7 @@ export default function Login({ navigation }) {
   const dispatch = useDispatch();
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://192.168.1.12:9999/auth/sign-in", {
+      const res = await axios.post(`${API_ROOT}/auth/sign-in`, {
         identifier: identifier,
         password: password,
       });
@@ -55,7 +56,7 @@ export default function Login({ navigation }) {
   const handleForgotPassword = async () => {
     try {
       const res = await axios.post(
-        "http://192.168.1.12:9999/user/forget-password",
+        `${API_ROOT}/user/forget-password`,
         {
           email: email,
         }

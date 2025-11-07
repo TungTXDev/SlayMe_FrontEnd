@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
+import { API_ROOT } from "../utils/constant";
 
 const ProductDetail = ({ route, navigation }) => {
   const { serviceId } = route.params; // lấy serviceId từ params
@@ -22,7 +23,7 @@ const ProductDetail = ({ route, navigation }) => {
       try {
         setLoading(true); // Bắt đầu loading
         const response = await axios.get(
-          `http://192.168.1.12:9999/store/get-service/${serviceId}`
+          `${API_ROOT}/store/get-service/${serviceId}`
         );
 
         if (response.status === 200) {

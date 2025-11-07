@@ -14,6 +14,7 @@ import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import { API_ROOT } from "../utils/constant";
 
 export default function RequestOrder({ navigation }) {
   const [selectedValue, setSelectedValue] = useState("");
@@ -36,7 +37,7 @@ export default function RequestOrder({ navigation }) {
   const getAllStore = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.1.12:9999/store/listStore"
+        `${API_ROOT}/store/listStore`
       );
       setStores(response.data);
     } catch (error) {
@@ -104,7 +105,7 @@ export default function RequestOrder({ navigation }) {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.12:9999/service-orders/create-order/${userId}`,
+        `${API_ROOT}/service-orders/create-order/${userId}`,
         orderData
       );
       console.log("Order created successfully:", response.data);

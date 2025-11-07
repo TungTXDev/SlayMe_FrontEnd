@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
+import { API_ROOT } from "../utils/constant";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState();
@@ -37,7 +38,7 @@ export default function RegisterScreen({ navigation }) {
     }
 
     axios
-      .post("http://192.168.1.12:9999/auth/sign-up", {
+      .post(`${API_ROOT}/auth/sign-up`, {
         account: {
           email: email,
           password: password,

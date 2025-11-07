@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { API_ROOT } from "../utils/constant";
 
 export default function Test({ navigation }) {
   const [quizData, setQuizData] = useState(null); // Dữ liệu quiz nhận từ server
@@ -34,7 +35,7 @@ export default function Test({ navigation }) {
   // Bắt đầu quiz và gọi API để lấy dữ liệu quiz
   const startQuiz = async () => {
     try {
-      const res = await axios.post("http://192.168.1.12:9999/quiz/createQuiz", {
+      const res = await axios.post(`${API_ROOT}/quiz/createQuiz`, {
         title: title,
         description: description,
         userId: userId,
@@ -56,7 +57,7 @@ export default function Test({ navigation }) {
   // Function to fetch quiz by ID
   const fetchQuizById = async (quizId) => {
     try {
-      const res = await axios.get(`http://192.168.1.12:9999/quiz/${quizId}`);
+      const res = await axios.get(`${API_ROOT}/quiz/${quizId}`);
       setQuizData(res.data); // Set the quiz data
     } catch (error) {
       console.log("Error fetching quiz by ID:", error);
@@ -87,7 +88,7 @@ export default function Test({ navigation }) {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.12:9999/quiz/submit/${quizData._id}`,
+        `${API_ROOT}/quiz/submit/${quizData._id}`,
         { answers }
       );
 

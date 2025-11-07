@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_ROOT } from "../utils/constant";
 
 export function ChatBot() {
   const [messages, setMessages] = useState([]);
@@ -72,7 +73,7 @@ export function ChatBot() {
 
     // Gửi yêu cầu tới API để lấy phản hồi từ ChatBot
     try {
-      const response = await fetch("http://192.168.1.12:9999/user/chatBot", {
+      const response = await fetch(`${API_ROOT}/user/chatBot`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

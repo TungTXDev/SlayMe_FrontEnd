@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import { useSelector } from "react-redux";
 import moment from "moment-timezone"; // Import moment-timezone
+import { API_ROOT } from "../utils/constant";
 
 export default function Notification({ navigation }) {
   const userId = useSelector((state) => state.auth.user?.id);
@@ -27,7 +28,7 @@ export default function Notification({ navigation }) {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.12:9999/service-orders/getNotification/${userId}`
+          `${API_ROOT}/service-orders/getNotification/${userId}`
         );
 
         if (response.data && Array.isArray(response.data.orders)) {

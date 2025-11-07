@@ -14,6 +14,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { API_ROOT } from "../utils/constant";
 
 export default function MyStore({ navigation }) {
   const userName = useSelector((state) => state.auth.user?.name);
@@ -41,7 +42,7 @@ export default function MyStore({ navigation }) {
 
   const getService = async () => {
     try {
-      const res = await axios.get(`http://192.168.1.12:9999/store/${ownerId}`);
+      const res = await axios.get(`${API_ROOT}/store/${ownerId}`);
       setService(res.data.services || []);
       setStoreId(res.data.storeId);
     } catch (error) {
@@ -61,7 +62,7 @@ export default function MyStore({ navigation }) {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.12:9999/store/create-service/${storeId}`,
+        `${API_ROOT}/store/create-service/${storeId}`,
         {
           services: [
             {
@@ -87,7 +88,7 @@ export default function MyStore({ navigation }) {
     if (!selectedService) return;
     try {
       await axios.put(
-        `http://192.168.1.12:9999/store/edit-service/${storeId}`,
+        `${API_ROOT}/store/edit-service/${storeId}`,
         {
           _id: selectedService._id,
           service_name: newService.service_name,

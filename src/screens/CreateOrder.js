@@ -13,6 +13,7 @@ import { Calendar } from "react-native-calendars";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { API_ROOT } from "../utils/constant";
 
 const CreateOrder = ({ route, navigation }) => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -35,7 +36,7 @@ const CreateOrder = ({ route, navigation }) => {
   const getService = async () => {
     try {
       const res = await axios.get(
-        `http://192.168.1.12:9999/store/get-service/${serviceId}`
+        `${API_ROOT}/store/get-service/${serviceId}`
       );
       setService({
         serviceName: res.data.serviceName,
@@ -102,7 +103,7 @@ const CreateOrder = ({ route, navigation }) => {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.12:9999/service-orders/create-order-id/${serviceId}`,
+        `${API_ROOT}/service-orders/create-order-id/${serviceId}`,
         orderData
       );
       console.log("Order created successfully:", response.data);

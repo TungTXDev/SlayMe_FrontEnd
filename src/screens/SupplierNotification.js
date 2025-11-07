@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { useSelector } from "react-redux";
 import moment from "moment-timezone";
+import { API_ROOT } from "../utils/constant";
 
 export default function SupplierNotification({ navigation }) {
   const ownerId = useSelector((state) => state.auth.user?.id);
@@ -29,7 +30,7 @@ export default function SupplierNotification({ navigation }) {
     const fetchStore = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.12:9999/store/${ownerId}`
+          `${API_ROOT}/store/${ownerId}`
         );
         setStoreId(response.data.storeId);
       } catch (error) {
@@ -51,7 +52,7 @@ export default function SupplierNotification({ navigation }) {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://192.168.1.12:9999/service-orders/getNotificationBySupplier/${storeId}`
+        `${API_ROOT}/service-orders/getNotificationBySupplier/${storeId}`
       );
 
       if (response.data && Array.isArray(response.data.orders)) {
@@ -71,7 +72,7 @@ export default function SupplierNotification({ navigation }) {
     try {
       console.log("OrderId:", orderId);
       await axios.put(
-        `http://192.168.1.12:9999/service-orders/${orderId}/status-order`,
+        `${API_ROOT}/service-orders/${orderId}/status-order`,
         {
           status: "Completed",
         }
@@ -87,7 +88,7 @@ export default function SupplierNotification({ navigation }) {
   const handleReject = async (orderId) => {
     try {
       await axios.put(
-        `http://192.168.1.12:9999/service-orders/${orderId}/status-order`,
+        `${API_ROOT}/service-orders/${orderId}/status-order`,
         {
           status: "Rejected",
         }

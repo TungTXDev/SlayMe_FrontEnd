@@ -7,14 +7,14 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import SLAYME from "../../assets/SLAYME.svg";
-import { API_ROOT } from "../utils/constant";
+import { API_ROOT, COLORS, FONTS, SPACING } from "../utils/constant";
 
 const HomeScreen = ({ navigation }) => {
   const [stores, setStores] = useState([]);
@@ -85,159 +85,242 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.viewImage}>
-          <SLAYME width={150} height={35} />
-        </View>
-        <View style={styles.cartContainer}>
-          <View style={styles.searchContainer}>
-            <Ionicons
-              name="search"
-              size={20}
-              color="#888"
-              style={styles.searchIcon}
-            />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Tìm kiếm dịch vụ..."
-              placeholderTextColor="#8A8A8A"
-              value={filterSearch}
-              onChangeText={setFilterSearch}
-            />
+      <ScrollView 
+        contentContainerStyle={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <SLAYME width={160} height={40} />
           </View>
+          
+          <View style={styles.searchSection}>
+            <View style={styles.searchContainer}>
+              <Ionicons
+                name="search"
+                size={20}
+                color={COLORS.GRAY}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Tìm kiếm dịch vụ..."
+                placeholderTextColor={COLORS.GRAY}
+                value={filterSearch}
+                onChangeText={setFilterSearch}
+              />
+              {filterSearch.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => setFilterSearch("")}
+                  style={styles.clearButton}
+                >
+                  <Ionicons name="close-circle" size={20} color={COLORS.GRAY} />
+                </TouchableOpacity>
+              )}
+            </View>
 
-          {/* Các biểu tượng */}
-          <View style={styles.iconContainer}>
-            <TouchableOpacity
-              style={styles.cartButton}
-              onPress={() => navigation.navigate("RequestOrder")}
-            >
-              <FontAwesome name="plus" size={28} color="#333" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cartButton}
-              onPress={() =>
-                navigation.navigate(
-                  role === 1 ? "Notification" : "SupplierNotification"
-                )
-              }
-            >
-              <FontAwesome name="bell" size={28} color="#333" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cartButton}
-              onPress={() => navigation.navigate("Cart")}
-            >
-              <FontAwesome name="cart-plus" size={28} color="#333" />
-            </TouchableOpacity>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => navigation.navigate("RequestOrder")}
+              >
+                <Ionicons name="add-circle" size={28} color={COLORS.PRIMARY} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() =>
+                  navigation.navigate(
+                    role === 1 ? "Notification" : "SupplierNotification"
+                  )
+                }
+              >
+                <Ionicons name="notifications-outline" size={28} color={COLORS.TEXT} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => navigation.navigate("Cart")}
+              >
+                <Ionicons name="cart-outline" size={28} color={COLORS.TEXT} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
         {/* Bộ lọc giá */}
         <View style={styles.filters}>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              filterPrice === "lowToHigh" && styles.selectedFilter,
-            ]}
-            onPress={() => setFilterPrice("lowToHigh")}
-          >
-            <Text style={styles.filterText}>Giá: Tăng dần</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              filterPrice === "highToLow" && styles.selectedFilter,
-            ]}
-            onPress={() => setFilterPrice("highToLow")}
-          >
-            <Text style={styles.filterText}>Giá: Giảm dần</Text>
-          </TouchableOpacity>
+          <Text style={styles.filterLabel}>Sắp xếp theo giá:</Text>
+          <View style={styles.filterButtons}>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filterPrice === "lowToHigh" && styles.selectedFilter,
+              ]}
+              onPress={() => setFilterPrice("lowToHigh")}
+            >
+              <Ionicons 
+                name="arrow-up" 
+                size={16} 
+                color={filterPrice === "lowToHigh" ? COLORS.WHITE : COLORS.GRAY} 
+              />
+              <Text style={[
+                styles.filterText,
+                filterPrice === "lowToHigh" && styles.selectedFilterText
+              ]}>
+                Tăng dần
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filterPrice === "highToLow" && styles.selectedFilter,
+              ]}
+              onPress={() => setFilterPrice("highToLow")}
+            >
+              <Ionicons 
+                name="arrow-down" 
+                size={16} 
+                color={filterPrice === "highToLow" ? COLORS.WHITE : COLORS.GRAY} 
+              />
+              <Text style={[
+                styles.filterText,
+                filterPrice === "highToLow" && styles.selectedFilterText
+              ]}>
+                Giảm dần
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Hiển thị dịch vụ */}
         <View style={styles.categorySection}>
-          <Text style={styles.sectionTitle}>Dịch vụ</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Dịch vụ nổi bật</Text>
+            <Text style={styles.sectionSubtitle}>
+              {filteredStores.reduce((count, store) => count + (store.services?.length || 0), 0)} dịch vụ
+            </Text>
+          </View>
 
           {/* Hiển thị các dịch vụ */}
-          <View style={styles.productRow}>
-            {filteredStores.map((store) =>
-              store.services?.map((service) => (
-                <TouchableOpacity
-                  style={styles.productContainer}
-                  key={service._id}
-                  onPress={() => openServiceDetail(service._id)} // mở chi tiết dịch vụ khi nhấn vào sản phẩm
-                >
-                  <Image
-                    source={{ uri: store.image[0] }}
-                    style={styles.productImage}
-                  />
-                  <View style={styles.productDetails}>
-                    <Text style={styles.productTitle}>
-                      {service.service_name}
-                    </Text>
-                    <Text style={styles.productPrice}>
-                      Cửa hàng: {store.nameShop}
-                    </Text>
-                    <Text style={styles.productPrice}>
-                      Gía: {service.service_price} VND
-                    </Text>
-                    <Text style={styles.productStock}>
-                      Địa chỉ: {store.address}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))
-            )}
-          </View>
+          {filteredStores.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="search-outline" size={64} color={COLORS.GRAY} />
+              <Text style={styles.emptyText}>Không tìm thấy dịch vụ nào</Text>
+              <Text style={styles.emptySubtext}>Thử tìm kiếm với từ khóa khác</Text>
+            </View>
+          ) : (
+            <View style={styles.productRow}>
+              {filteredStores.map((store) =>
+                store.services?.map((service) => (
+                  <TouchableOpacity
+                    style={styles.productContainer}
+                    key={service._id}
+                    onPress={() => openServiceDetail(service._id)}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.imageContainer}>
+                      <Image
+                        source={{ uri: store.image?.[0] || "https://via.placeholder.com/200" }}
+                        style={styles.productImage}
+                      />
+                      <View style={styles.priceBadge}>
+                        <Text style={styles.priceBadgeText}>
+                          {service.service_price?.toLocaleString('vi-VN')} VND
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.productDetails}>
+                      <Text style={styles.productTitle} numberOfLines={2}>
+                        {service.service_name}
+                      </Text>
+                      <View style={styles.storeInfo}>
+                        <Ionicons name="storefront-outline" size={14} color={COLORS.GRAY} />
+                        <Text style={styles.storeName} numberOfLines={1}>
+                          {store.nameShop}
+                        </Text>
+                      </View>
+                      <View style={styles.locationInfo}>
+                        <Ionicons name="location-outline" size={14} color={COLORS.GRAY} />
+                        <Text style={styles.locationText} numberOfLines={1}>
+                          {store.address}
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+          )}
         </View>
 
         {/* Blog trending */}
         <View style={styles.blogSection}>
-          <Text style={styles.sectionTitle}>Trending</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Xu hướng</Text>
+            <Ionicons name="flame" size={24} color={COLORS.WARNING} />
+          </View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.blogScrollContent}
+          >
             {blogsTrending.map((item, index) => (
               <View key={index} style={styles.blogCard}>
-                <Image source={item.image} style={styles.blogImage} />
-                <Text style={styles.blogText}>{item.title}</Text>
-                <TouchableOpacity
-                  style={styles.linkContainerFB}
-                  onPress={() =>
-                    Linking.openURL(
-                      "https://www.facebook.com/share/p/1B4AYbq8vd/"
-                    )
-                  }
-                >
-                  <Text style={styles.linkText}>Xem trên Facebook</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.linkContainer}
-                  onPress={() =>
-                    Linking.openURL(
-                      "https://www.tiktok.com/@koremaz_/video/7427051084713102600"
-                    )
-                  }
-                >
-                  <Text style={styles.linkText}>Xem TikTok của tôi</Text>
-                </TouchableOpacity>
+                <View style={styles.blogImageContainer}>
+                  <Image source={item.image} style={styles.blogImage} />
+                </View>
+                <View style={styles.blogContent}>
+                  <Text style={styles.blogText} numberOfLines={2}>{item.title}</Text>
+                  <View style={styles.blogButtons}>
+                    <TouchableOpacity
+                      style={styles.linkContainerFB}
+                      onPress={() =>
+                        Linking.openURL(
+                          "https://www.facebook.com/share/p/1B4AYbq8vd/"
+                        )
+                      }
+                    >
+                      <Ionicons name="logo-facebook" size={16} color={COLORS.WHITE} />
+                      <Text style={styles.linkText}>Facebook</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.linkContainer}
+                      onPress={() =>
+                        Linking.openURL(
+                          "https://www.tiktok.com/@koremaz_/video/7427051084713102600"
+                        )
+                      }
+                    >
+                      <Ionicons name="logo-tiktok" size={16} color={COLORS.WHITE} />
+                      <Text style={styles.linkText}>TikTok</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             ))}
           </ScrollView>
         </View>
 
         <View style={styles.tipsSection}>
-          <Text style={styles.tipsTitle}>Mẹo chăm sóc</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Mẹo chăm sóc</Text>
+            <Ionicons name="bulb-outline" size={24} color={COLORS.WARNING} />
+          </View>
 
           <View style={styles.tipContainer}>
-            <Text style={styles.tipTitle}>
-              Mẹo để tóc đẹp mà không phải ai cũng biết
-            </Text>
-            <Image
-              source={{
-                uri: "https://anhnail.com/wp-content/uploads/2024/10/Hinh-gai-xinh-Viet-Nam-ngau.jpg",
-              }}
-              style={styles.tipImage}
-            />
+            <View style={styles.tipHeader}>
+              <Ionicons name="cut-outline" size={24} color={COLORS.PRIMARY} />
+              <Text style={styles.tipTitle}>
+                Mẹo để tóc đẹp mà không phải ai cũng biết
+              </Text>
+            </View>
+            <View style={styles.tipImageContainer}>
+              <Image
+                source={{
+                  uri: "https://anhnail.com/wp-content/uploads/2024/10/Hinh-gai-xinh-Viet-Nam-ngau.jpg",
+                }}
+                style={styles.tipImage}
+              />
+            </View>
             <Text style={styles.tipText}>
               Tóc đẹp không chỉ nhờ vào sản phẩm bạn dùng, mà còn nhờ vào chế độ
               chăm sóc hợp lý. Hãy đảm bảo rằng bạn đang sử dụng các loại dầu
@@ -248,13 +331,18 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.tipContainer}>
-            <Text style={styles.tipTitle}>Chăm sóc da mùa đông</Text>
-            <Image
-              source={{
-                uri: "https://anhnail.com/wp-content/uploads/2024/10/Hinh-anh-gai-xinh-k9-toc-dai.jpg",
-              }}
-              style={styles.tipImage}
-            />
+            <View style={styles.tipHeader}>
+              <Ionicons name="sunny-outline" size={24} color={COLORS.PRIMARY} />
+              <Text style={styles.tipTitle}>Chăm sóc da mùa đông</Text>
+            </View>
+            <View style={styles.tipImageContainer}>
+              <Image
+                source={{
+                  uri: "https://anhnail.com/wp-content/uploads/2024/10/Hinh-anh-gai-xinh-k9-toc-dai.jpg",
+                }}
+                style={styles.tipImage}
+              />
+            </View>
             <Text style={styles.tipText}>
               Vào mùa đông, da dễ bị khô và thiếu ẩm. Bạn nên sử dụng các loại
               kem dưỡng ẩm sâu và đừng quên bảo vệ da khỏi gió lạnh. Ngoài ra,
@@ -290,196 +378,331 @@ const blogsTrending = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: COLORS.BACKGROUND,
   },
-  cartContainer: {
+  scrollView: {
+    padding: SPACING.MEDIUM,
+    paddingBottom: SPACING.XLARGE,
+  },
+  header: {
+    marginBottom: SPACING.LARGE,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: SPACING.MEDIUM,
+  },
+  searchSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    gap: SPACING.SMALL,
   },
   searchContainer: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    height: 40,
-    width: "60%",
+    borderColor: "#E0E0E0",
+    paddingHorizontal: SPACING.MEDIUM,
+    height: 48,
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   searchIcon: {
-    marginRight: 10,
+    marginRight: SPACING.SMALL,
   },
   searchInput: {
     flex: 1,
-    padding: 10,
-    backgroundColor: "#FFF",
-    borderColor: "#DDD",
+    fontSize: FONTS.REGULAR,
+    color: COLORS.TEXT,
+    paddingVertical: 0,
+  },
+  clearButton: {
+    padding: SPACING.TINY,
   },
   iconContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: SPACING.SMALL,
+  },
+  iconButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: COLORS.WHITE,
     alignItems: "center",
-    width: "40%",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  cartButton: {
-    padding: 8,
+  filters: {
+    marginBottom: SPACING.LARGE,
   },
-  scrollView: {
-    padding: 15,
+  filterLabel: {
+    fontSize: FONTS.REGULAR,
+    fontWeight: "600",
+    color: COLORS.TEXT,
+    marginBottom: SPACING.SMALL,
   },
-  title: {
-    fontSize: 24,
+  filterButtons: {
+    flexDirection: "row",
+    gap: SPACING.SMALL,
+  },
+  filterButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.SMALL,
+    paddingHorizontal: SPACING.MEDIUM,
+    borderRadius: 12,
+    backgroundColor: COLORS.WHITE,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    gap: SPACING.TINY,
+  },
+  selectedFilter: {
+    backgroundColor: COLORS.PRIMARY,
+    borderColor: COLORS.PRIMARY,
+  },
+  filterText: {
+    fontSize: FONTS.SMALL,
+    color: COLORS.GRAY,
+    fontWeight: "500",
+  },
+  selectedFilterText: {
+    color: COLORS.WHITE,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
   },
   categorySection: {
-    marginTop: 20,
+    marginTop: SPACING.MEDIUM,
+    marginBottom: SPACING.LARGE,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: SPACING.MEDIUM,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: FONTS.LARGE,
     fontWeight: "bold",
-    marginBottom: 15,
+    color: COLORS.TEXT,
+  },
+  sectionSubtitle: {
+    fontSize: FONTS.SMALL,
+    color: COLORS.GRAY,
   },
   productRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    gap: SPACING.SMALL,
   },
   productContainer: {
     width: "48%",
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: "#000",
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
+    overflow: "hidden",
+    marginBottom: SPACING.MEDIUM,
+    shadowColor: COLORS.BLACK,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    alignItems: "center",
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  imageContainer: {
+    position: "relative",
+    width: "100%",
+    height: 140,
   },
   productImage: {
     width: "100%",
-    height: 120,
-    borderRadius: 8,
+    height: "100%",
     resizeMode: "cover",
   },
-  productDetails: {
-    flex: 1,
-    marginTop: 10,
+  priceBadge: {
+    position: "absolute",
+    top: SPACING.SMALL,
+    right: SPACING.SMALL,
+    backgroundColor: COLORS.PRIMARY,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
   },
-  productTitle: {
-    fontSize: 16,
+  priceBadgeText: {
+    color: COLORS.WHITE,
+    fontSize: FONTS.TINY,
     fontWeight: "bold",
   },
-  productPrice: {
-    fontSize: 14,
-    color: "#007bff",
-    marginVertical: 5,
+  productDetails: {
+    padding: SPACING.SMALL,
   },
-  productStock: {
-    fontSize: 14,
-    color: "#888",
+  productTitle: {
+    fontSize: FONTS.REGULAR,
+    fontWeight: "bold",
+    color: COLORS.TEXT,
+    marginBottom: SPACING.TINY,
+    minHeight: 40,
   },
-  filters: {
+  storeInfo: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
+    alignItems: "center",
+    marginBottom: SPACING.TINY,
+    gap: 4,
   },
-  filterButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "#E0E0E0",
-    marginHorizontal: 5,
+  storeName: {
+    fontSize: FONTS.SMALL,
+    color: COLORS.TEXT,
+    flex: 1,
   },
-  selectedFilter: {
-    backgroundColor: "#F6C7F5",
+  locationInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  locationText: {
+    fontSize: FONTS.SMALL,
+    color: COLORS.GRAY,
+    flex: 1,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.XLARGE * 2,
+  },
+  emptyText: {
+    fontSize: FONTS.MEDIUM,
+    fontWeight: "bold",
+    color: COLORS.TEXT,
+    marginTop: SPACING.MEDIUM,
+  },
+  emptySubtext: {
+    fontSize: FONTS.SMALL,
+    color: COLORS.GRAY,
+    marginTop: SPACING.TINY,
   },
   blogSection: {
-    marginTop: 30,
+    marginTop: SPACING.LARGE,
+    marginBottom: SPACING.LARGE,
+  },
+  blogScrollContent: {
+    paddingRight: SPACING.MEDIUM,
   },
   blogCard: {
-    width: 200,
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    padding: 10,
-    marginRight: 15,
+    width: 280,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
+    overflow: "hidden",
+    marginRight: SPACING.MEDIUM,
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  blogImageContainer: {
+    position: "relative",
+    width: "100%",
+    height: 160,
   },
   blogImage: {
     width: "100%",
-    height: 120,
-    borderRadius: 10,
+    height: "100%",
+    resizeMode: "cover",
+  },
+  blogContent: {
+    padding: SPACING.MEDIUM,
   },
   blogText: {
-    textAlign: "center",
+    fontSize: FONTS.MEDIUM,
     fontWeight: "bold",
-    marginTop: 10,
+    color: COLORS.TEXT,
+    marginBottom: SPACING.SMALL,
+    minHeight: 44,
+  },
+  blogButtons: {
+    gap: SPACING.TINY,
   },
   linkContainerFB: {
-    backgroundColor: "#1877f2",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    width: "100%",
-    marginBottom: 8,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1877f2",
+    paddingVertical: SPACING.SMALL,
+    paddingHorizontal: SPACING.MEDIUM,
+    borderRadius: 8,
+    gap: SPACING.TINY,
   },
   linkContainer: {
-    backgroundColor: "#ff0050",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    width: "100%",
-    marginBottom: 8,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000000",
+    paddingVertical: SPACING.SMALL,
+    paddingHorizontal: SPACING.MEDIUM,
+    borderRadius: 8,
+    gap: SPACING.TINY,
   },
   linkText: {
-    color: "#fff",
-    textAlign: "center",
+    color: COLORS.WHITE,
+    fontSize: FONTS.SMALL,
     fontWeight: "bold",
-  },
-  viewImage: {
-    alignItems: "center",
-    marginBottom: 10,
   },
   tipsSection: {
-    marginTop: 30,
+    marginTop: SPACING.LARGE,
   },
   tipsTitle: {
-    fontSize: 18,
+    fontSize: FONTS.LARGE,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: SPACING.MEDIUM,
   },
   tipContainer: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    shadowColor: "#000",
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
+    padding: SPACING.MEDIUM,
+    marginBottom: SPACING.MEDIUM,
+    shadowColor: COLORS.BLACK,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  tipHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: SPACING.SMALL,
+    gap: SPACING.SMALL,
   },
   tipTitle: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: FONTS.MEDIUM,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: COLORS.TEXT,
+  },
+  tipImageContainer: {
+    borderRadius: 8,
+    overflow: "hidden",
+    marginBottom: SPACING.SMALL,
   },
   tipImage: {
     width: "100%",
-    height: 150,
-    borderRadius: 10,
-    marginBottom: 10,
+    height: 180,
+    resizeMode: "cover",
   },
   tipText: {
-    fontSize: 14,
-    color: "#555",
-    lineHeight: 20,
+    fontSize: FONTS.REGULAR,
+    color: COLORS.GRAY,
+    lineHeight: 22,
   },
 });
 

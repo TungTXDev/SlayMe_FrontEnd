@@ -4,7 +4,7 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 
 // Group images into chunks of 4
 const groupImages = (images) => {
@@ -121,12 +121,12 @@ export default function MapViewScreen({ navigation }) {
       )}
 
       <TouchableOpacity style={styles.cameraButton} onPress={pickImage}>
-        <Icon name="camera" size={40} color="white" />
+        <Ionicons name="camera" size={40} color="white" />
       </TouchableOpacity>
 
       {/* New button to show images from Local Storage */}
       <TouchableOpacity style={styles.showImagesButton} onPress={toggleImageModal}>
-        <Icon name="book" size={40} color="white" />
+        <Ionicons name="images" size={40} color="white" />
       </TouchableOpacity>
 
       {/* Modal to display images from AsyncStorage */}
@@ -139,7 +139,7 @@ export default function MapViewScreen({ navigation }) {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity onPress={toggleImageModal} style={styles.closeButton}>
-              <Icon name="times" size={24} color="#000" />
+              <Ionicons name="close" size={24} color="#000" />
             </TouchableOpacity>
             {groupedImages.length > 0 ? (
               <SectionList
@@ -166,7 +166,7 @@ export default function MapViewScreen({ navigation }) {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Icon name="times" size={24} color="#000" />
+              <Ionicons name="close" size={24} color="#000" />
             </TouchableOpacity>
             {images.length > 0 ? (
               <SectionList

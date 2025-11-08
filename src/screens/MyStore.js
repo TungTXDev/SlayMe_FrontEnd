@@ -11,7 +11,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { API_ROOT } from "../utils/constant";
@@ -174,7 +174,7 @@ export default function MyStore({ navigation }) {
                 style={styles.menuButton}
                 onPress={() => openDeleteModal(item._id)}
               >
-                <Icon name="ellipsis-v" size={24} color="#333" />
+                <Ionicons name="ellipsis-vertical" size={24} color="#333" />
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -184,7 +184,7 @@ export default function MyStore({ navigation }) {
       />
 
       <TouchableOpacity style={styles.addButton} onPress={openCreateModal}>
-        <Icon name="plus" size={30} color="white" />
+        <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
 
       <Modal

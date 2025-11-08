@@ -1,27 +1,28 @@
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
+import { COLORS, FONTS, SPACING } from "../utils/constant";
 
 const getNavItems = (role) => {
   const commonItems = [
-    { name: "HomeTab", icon: "home" },
-    { name: "ChatBot", icon: "comment" },
-    { name: "Profile", icon: "user" }
+    { name: "HomeTab", icon: "home-outline" },
+    { name: "ChatBot", icon: "chatbubble-outline" },
+    { name: "Profile", icon: "person-outline" }
   ];
 
   const roleSpecificItems = {
     1: [
-      { name: "Test", icon: "clipboard" },
-      { name: "Map", icon: "map" },
+      { name: "Test", icon: "document-text-outline" },
+      { name: "Map", icon: "map-outline" },
     
     ],
     2: [
-      { name: "MyStore", icon: "shopping-cart" },
-      { name: "OrderStore", icon: "ticket" }
+      { name: "MyStore", icon: "storefront-outline" },
+      { name: "OrderStore", icon: "receipt-outline" }
     ],
     3: [
-      { name: "Censor", icon: "edit" },
-      { name: "CheckList", icon: "check" }
+      { name: "Censor", icon: "create-outline" },
+      { name: "CheckList", icon: "checkmark-circle-outline" }
     ],
   };
 
@@ -80,13 +81,19 @@ const TabBarComponent = ({ state, descriptors, navigation }) => {
             onLongPress={onLongPress}
             style={styles.tab}
           >
-            <FontAwesome
-              name={navItem.icon}
-              size={24}
-              color={isFocused ? "pink" : "gray"}
-            />
+            <View style={[styles.iconContainer, isFocused && styles.iconContainerFocused]}>
+              <Ionicons
+                name={isFocused ? navItem.icon.replace("-outline", "") : navItem.icon}
+                size={24}
+                color={isFocused ? COLORS.PRIMARY : COLORS.GRAY}
+              />
+            </View>
             <Text
-              style={[styles.text, { color: isFocused ? "orange" : "gray" }]}
+              style={[
+                styles.text,
+                { color: isFocused ? COLORS.PRIMARY : COLORS.GRAY },
+                isFocused && styles.textFocused,
+              ]}
             >
               {label}
             </Text>
@@ -100,18 +107,44 @@ const TabBarComponent = ({ state, descriptors, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: COLORS.WHITE,
     justifyContent: "space-around",
     alignItems: "center",
-    height: 50,
+    height: 70,
+    paddingTop: SPACING.SMALL,
+    paddingBottom: SPACING.SMALL,
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
   },
   tab: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: SPACING.TINY,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: SPACING.TINY,
+  },
+  iconContainerFocused: {
+    backgroundColor: `${COLORS.PRIMARY}15`,
   },
   text: {
-    marginTop: 5,
+    fontSize: FONTS.TINY,
+    fontWeight: "500",
+    marginTop: 2,
+  },
+  textFocused: {
+    fontWeight: "bold",
   },
 });
 

@@ -8,13 +8,16 @@ import {
   Modal,
   Alert,
   Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/authSlice";
 import axios from "axios";
 import SLAYME from "../../assets/SLAYME.svg";
-import { API_ROOT } from "../utils/constant";
+import { API_ROOT, COLORS, FONTS, SPACING } from "../utils/constant";
 
 export default function Login({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,78 +81,89 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton}>
-        <Icon name="arrow-left" size={24} color="#000" />
-      </TouchableOpacity>
-
-      <View style={styles.viewImage}>
-        <SLAYME width={200} height={100} />
-      </View>
-
-      <Text style={styles.title}>Get Started with SlayMe</Text>
-
-      <View style={styles.containerBar}>
-        <TextInput
-          style={styles.input}
-          placeholder="EMAIL OR USERNAME"
-          onChangeText={(text) => setIdentifier(text)}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="PASSWORD"
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry={true}
-        />
-
-        {errorMessage ? (
-          <Text style={styles.errorText}>{errorMessage}</Text>
-        ) : null}
-
-        <TouchableOpacity style={styles.continueButton} onPress={handleLogin}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.orText}>----------------OR----------------</Text>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          accessibilityLabel="Continue with Google"
-        >
-          <Icon name="google" size={24} color="#DB4437" style={styles.icon} />
-          <Text style={styles.socialButtonText}>Continue with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          accessibilityLabel="Continue with Apple"
-        >
-          <Icon name="apple" size={24} color="#000" style={styles.icon} />
-          <Text style={styles.socialButtonText}>Continue with Apple</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          accessibilityLabel="Continue with Facebook"
-        >
-          <Icon name="facebook" size={24} color="#4267B2" style={styles.icon} />
-          <Text style={styles.socialButtonText}>Continue with Facebook</Text>
-        </TouchableOpacity>
-      </View>
-      <Text
-        style={styles.termsForgotPass}
-        onPress={() => setModalVisible(true)}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        Forgot password?
-      </Text>
+        <View style={styles.header}>
+          <View style={styles.viewImage}>
+            <SLAYME width={180} height={80} />
+          </View>
+          <Text style={styles.title}>Chào mừng trở lại!</Text>
+          <Text style={styles.subtitle}>Đăng nhập để tiếp tục sử dụng SlayMe</Text>
+        </View>
 
-      <Text
-        style={styles.termsText}
-        onPress={() => navigation.navigate("Register")}
-      >
-        Create your account?
-      </Text>
+        <View style={styles.formContainer}>
+          <View style={styles.inputWrapper}>
+            <Ionicons name="person-outline" size={20} color={COLORS.GRAY} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Email hoặc tên đăng nhập"
+              placeholderTextColor={COLORS.GRAY}
+              value={identifier}
+              onChangeText={(text) => {
+                setIdentifier(text);
+                setErrorMessage("");
+              }}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
+
+          <View style={styles.inputWrapper}>
+            <Ionicons name="lock-closed-outline" size={20} color={COLORS.GRAY} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Mật khẩu"
+              placeholderTextColor={COLORS.GRAY}
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                setErrorMessage("");
+              }}
+              secureTextEntry={true}
+              autoCapitalize="none"
+            />
+          </View>
+
+          {errorMessage ? (
+            <View style={styles.errorContainer}>
+              <Ionicons name="alert-circle" size={16} color={COLORS.ERROR} />
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            </View>
+          ) : null}
+
+          <TouchableOpacity
+            style={styles.forgotPassword}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.loginButton,
+              (!identifier || !password) && styles.loginButtonDisabled,
+            ]}
+            onPress={handleLogin}
+            disabled={!identifier || !password}
+          >
+            <Text style={styles.loginButtonText}>Đăng nhập</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Chưa có tài khoản? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <Text style={styles.registerLink}>Đăng ký ngay</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
 
       {/* Modal Forgot Password */}
       <Modal
@@ -158,42 +172,68 @@ export default function Login({ navigation }) {
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(false);
-          setCodeSent(false); // Reset lại trạng thái khi đóng modal
+          setCodeSent(false);
+          setEmail("");
         }}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            {/* Nút X để đóng modal */}
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => {
                 setModalVisible(false);
                 setCodeSent(false);
+                setEmail("");
               }}
             >
-              <Icon name="times" size={24} color="#000" />
+              <Ionicons name="close" size={24} color={COLORS.GRAY} />
             </TouchableOpacity>
 
-            <Text style={styles.modalTitle}>Reset Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor="#aaa"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
+            <Ionicons
+              name="key-outline"
+              size={48}
+              color={COLORS.PRIMARY}
+              style={styles.modalIcon}
             />
+            <Text style={styles.modalTitle}>Quên mật khẩu?</Text>
+            <Text style={styles.modalSubtitle}>
+              {codeSent
+                ? "Mã xác thực đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư."
+                : "Nhập email của bạn để nhận mã xác thực đặt lại mật khẩu"}
+            </Text>
+
+            {!codeSent && (
+              <View style={styles.modalInputWrapper}>
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color={COLORS.GRAY}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.modalInput}
+                  placeholder="Nhập email của bạn"
+                  placeholderTextColor={COLORS.GRAY}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+            )}
 
             {codeSent ? (
-              <View style={styles.buttonContainer}>
+              <View style={styles.modalButtonContainer}>
                 <TouchableOpacity
-                  style={styles.modalButton}
+                  style={[styles.modalButton, styles.modalButtonSecondary]}
                   onPress={() => {
                     setModalVisible(false);
                     setCodeSent(false);
+                    setEmail("");
                   }}
                 >
-                  <Text style={styles.modalButtonText}>OK</Text>
+                  <Text style={styles.modalButtonSecondaryText}>Đóng</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.modalButton}
@@ -203,194 +243,250 @@ export default function Login({ navigation }) {
                 </TouchableOpacity>
               </View>
             ) : (
-              // Hiển thị nút "Send code to email" khi chưa gửi mã
               <TouchableOpacity
-                style={styles.modalButton}
+                style={[
+                  styles.modalButton,
+                  !email && styles.modalButtonDisabled,
+                ]}
                 onPress={handleForgotPassword}
+                disabled={!email}
               >
-                <Text style={styles.modalButtonText}>Send code to email</Text>
+                <Text style={styles.modalButtonText}>Gửi mã xác thực</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#F9F4F6", // Đổi thành màu nền nhẹ nhàng hơn
-    padding: 20,
+    backgroundColor: COLORS.BACKGROUND,
   },
-
-  backButton: {
-    marginBottom: 20,
-    alignSelf: "flex-start",
+  scrollContent: {
+    flexGrow: 1,
+    padding: SPACING.LARGE,
+    paddingTop: SPACING.XLARGE,
   },
-
-  title: {
-    fontSize: 24, // Lớn hơn để dễ đọc
-    fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
-    color: "#333", // Màu chữ dễ đọc
-  },
-
-  input: {
-    height: 50,
-    borderColor: "#ddd", // Màu sắc nhẹ nhàng cho đường viền
-    borderWidth: 1,
-    borderRadius: 30, // Bo tròn mềm mại hơn
-    paddingHorizontal: 20,
-    marginBottom: 20,
-    fontSize: 16,
-    color: "#333",
-    backgroundColor: "#fff", // Thêm màu nền trắng cho input
-  },
-
-  continueButton: {
-    height: 50,
-    backgroundColor: "#FF7B87", // Màu đẹp mắt cho nút "Continue"
-    borderRadius: 30,
+  header: {
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 30,
-    shadowColor: "#FF7B87", // Thêm hiệu ứng bóng cho nút
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
-  },
-
-  continueButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  orText: {
-    textAlign: "center",
-    marginBottom: 20,
-    fontSize: 16,
-    color: "#666",
-  },
-
-  socialButton: {
-    flexDirection: "row",
-    height: 50,
-    borderColor: "#ddd",
-    borderWidth: 1,
-    borderRadius: 30,
-    alignItems: "center",
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    backgroundColor: "#fff", // Thêm nền trắng cho các nút xã hội
-    shadowColor: "#ddd", // Thêm hiệu ứng bóng nhẹ
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-
-  icon: {
-    marginRight: 10,
-  },
-
-  socialButtonText: {
-    fontSize: 16,
-    color: "#000",
-  },
-
-  termsText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 14,
-    color: "#0066cc", // Màu chữ xanh nhẹ cho liên kết
-  },
-
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-
-  modalView: {
-    width: 320, // Độ rộng modal vừa đủ
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 25,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-
-  modalTitle: {
-    fontSize: 22, // Lớn hơn để nổi bật
-    marginBottom: 15,
-    fontWeight: "bold",
-    color: "#333", // Màu chữ tối
-  },
-
-  modalButton: {
-    backgroundColor: "#FF6B6B", // Màu nút dễ nhận diện
-    borderRadius: 25,
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    marginTop: 20,
-    shadowColor: "#FF6B6B", // Thêm bóng cho nút
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-
-  modalButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-    alignSelf: "center",
-  },
-
-  termsForgotPass: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 14,
-    color: "red",
-  },
-
-  closeIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-  },
-
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    marginLeft: 7,
-  },
-
-  containerBar: {
-    backgroundColor: "#FFF4F7", // Thêm màu nền cho khu vực chứa input
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  serviceImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
+    marginBottom: SPACING.XLARGE,
+    marginTop: SPACING.LARGE,
   },
   viewImage: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: SPACING.LARGE,
+  },
+  title: {
+    fontSize: FONTS.XLARGE,
+    fontWeight: "bold",
+    color: COLORS.TEXT,
+    marginBottom: SPACING.SMALL,
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: FONTS.REGULAR,
+    color: COLORS.GRAY,
+    textAlign: "center",
+    paddingHorizontal: SPACING.MEDIUM,
+  },
+  formContainer: {
+    marginTop: SPACING.XLARGE,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    marginBottom: SPACING.MEDIUM,
+    paddingHorizontal: SPACING.MEDIUM,
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  inputIcon: {
+    marginRight: SPACING.SMALL,
+  },
+  input: {
+    flex: 1,
+    height: 56,
+    fontSize: FONTS.REGULAR,
+    color: COLORS.TEXT,
+    paddingVertical: 0,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF5F5",
+    padding: SPACING.SMALL,
+    borderRadius: 8,
+    marginBottom: SPACING.MEDIUM,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.ERROR,
+  },
+  errorText: {
+    color: COLORS.ERROR,
+    fontSize: FONTS.SMALL,
+    marginLeft: SPACING.SMALL,
+    flex: 1,
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: SPACING.LARGE,
+  },
+  forgotPasswordText: {
+    color: COLORS.PRIMARY,
+    fontSize: FONTS.SMALL,
+    fontWeight: "600",
+  },
+  loginButton: {
+    backgroundColor: COLORS.PRIMARY,
+    height: 56,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: SPACING.SMALL,
+    shadowColor: COLORS.PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  loginButtonDisabled: {
+    backgroundColor: "#CCCCCC",
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  loginButtonText: {
+    color: COLORS.WHITE,
+    fontSize: FONTS.MEDIUM,
+    fontWeight: "bold",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: SPACING.XLARGE,
+    marginBottom: SPACING.LARGE,
+  },
+  footerText: {
+    fontSize: FONTS.REGULAR,
+    color: COLORS.GRAY,
+  },
+  registerLink: {
+    fontSize: FONTS.REGULAR,
+    color: COLORS.PRIMARY,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.6)",
+  },
+  modalView: {
+    width: "85%",
+    maxWidth: 400,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 20,
+    padding: SPACING.LARGE,
+    alignItems: "center",
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: FONTS.LARGE,
+    fontWeight: "bold",
+    color: COLORS.TEXT,
+    marginBottom: SPACING.LARGE,
+    marginTop: SPACING.MEDIUM,
+  },
+  modalButton: {
+    backgroundColor: COLORS.PRIMARY,
+    borderRadius: 12,
+    paddingVertical: SPACING.MEDIUM,
+    paddingHorizontal: SPACING.XLARGE,
+    marginTop: SPACING.MEDIUM,
+    minWidth: 150,
+    alignItems: "center",
+    shadowColor: COLORS.PRIMARY,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  modalButtonText: {
+    color: COLORS.WHITE,
+    fontSize: FONTS.REGULAR,
+    fontWeight: "bold",
+  },
+  modalIcon: {
+    marginBottom: SPACING.MEDIUM,
+  },
+  modalSubtitle: {
+    fontSize: FONTS.SMALL,
+    color: COLORS.GRAY,
+    textAlign: "center",
+    marginBottom: SPACING.LARGE,
+    paddingHorizontal: SPACING.SMALL,
+    lineHeight: 20,
+  },
+  modalInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    marginBottom: SPACING.LARGE,
+    paddingHorizontal: SPACING.MEDIUM,
+    width: "100%",
+  },
+  modalInput: {
+    flex: 1,
+    height: 50,
+    fontSize: FONTS.REGULAR,
+    color: COLORS.TEXT,
+    paddingVertical: 0,
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    gap: SPACING.SMALL,
+  },
+  modalButtonSecondary: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY,
+    flex: 1,
+  },
+  modalButtonSecondaryText: {
+    color: COLORS.PRIMARY,
+    fontSize: FONTS.REGULAR,
+    fontWeight: "bold",
+  },
+  modalButtonDisabled: {
+    backgroundColor: "#CCCCCC",
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  closeIcon: {
+    position: "absolute",
+    top: SPACING.MEDIUM,
+    right: SPACING.MEDIUM,
+    padding: SPACING.SMALL,
+    zIndex: 1,
   },
 });

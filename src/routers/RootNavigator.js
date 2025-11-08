@@ -31,7 +31,7 @@ import { ROUTER } from "../utils/constant";
 import Notification from "../screens/Notification";
 import SupplierNotification from "../screens/SupplierNotification";
 import Test from "../screens/Test";
-import RegisterScreen from "../screens/Register_screen";
+import RegisterScreen from "../screens/RegisterScreen";
 import ProductDetail from "../screens/ProductDetail";
 // import ServiceOrderSchedule from "../screens/ServiceOrder";
 import RequestOrder from "../screens/RequestOrder";
@@ -51,12 +51,12 @@ function HomeStack() {
         component={HomePage} 
         options={{ headerShown: false }} // Tắt header cho HomePage
       />
-      <Stack.Screen name="Notification" component={Notification} />
-      <Stack.Screen name="ProductDetail" component={ProductDetail} />
-      <Stack.Screen name="Cart" component={CartScreen} />
-      <Stack.Screen name="RequestOrder" component={RequestOrder} />
-      <Stack.Screen name="CreateOrder" component={CreateOrder} />
-      <Stack.Screen name="SupplierNotification" component={SupplierNotification} />
+      <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false }} />
+      <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false }} />
+      <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="RequestOrder" component={RequestOrder} options={{ headerShown: false }} />
+      <Stack.Screen name="CreateOrder" component={CreateOrder} options={{ headerShown: false }} />
+      <Stack.Screen name="SupplierNotification" component={SupplierNotification} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

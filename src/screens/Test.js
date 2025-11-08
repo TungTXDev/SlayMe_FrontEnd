@@ -14,7 +14,6 @@ import {
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { API_ROOT } from "../utils/constant";
 
 export default function Test({ navigation }) {

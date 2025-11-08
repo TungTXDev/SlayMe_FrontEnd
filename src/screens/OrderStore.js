@@ -83,9 +83,10 @@ export default function OrderStore({ navigation }) {
         }
       );
 
+      const statusText = getStatusText(newStatus);
       Alert.alert(
         "Thành công",
-        `Đơn hàng đã được cập nhật thành: ${newStatus}`
+        `Đơn hàng đã được cập nhật thành: ${statusText}`
       );
       fetchOrders();
     } catch (error) {
@@ -97,18 +98,36 @@ export default function OrderStore({ navigation }) {
   const getStatusColor = (status) => {
     switch (status) {
       case "Completed":
+      case "Hoàn thành":
         return "#4CAF50";
       case "Rejected":
+      case "Từ chối":
         return "#f44336";
       case "Pending":
+      case "Chờ xử lý":
         return "#FF9800";
       default:
         return "#2196F3";
     }
   };
 
-  const renderOrderItem = ({ item }) => (
-    <View style={styles.orderCard}>
+  const getStatusText = (status) => {
+    switch (status) {
+      case "Completed":
+        return "Hoàn thành";
+      case "Rejected":
+        return "Từ chối";
+      case "Pending":
+        return "Chờ xử lý";
+      default:
+        return status || "Chưa xác định";
+    }
+  };
+
+  const renderOrderItem = ({ item }) => {
+    const statusText = getStatusText(item.status);
+    return (
+      <View style={styles.orderCard}>
       <View style={styles.orderHeader}>
         <Text style={styles.serviceName}>
           🛎 {item.services[0]?.serviceName || "Dịch vụ"}
@@ -119,7 +138,7 @@ export default function OrderStore({ navigation }) {
             { backgroundColor: getStatusColor(item.status) },
           ]}
         >
-          <Text style={styles.statusText}>{item.status}</Text>
+          <Text style={styles.statusText}>{statusText}</Text>
         </View>
       </View>
 
@@ -133,13 +152,16 @@ export default function OrderStore({ navigation }) {
           .format("DD/MM/YYYY HH:mm")}
       </Text>
       <Text style={styles.orderDetails}>
-        👤 Khách hàng: {item.userName || "N/A"}
+        👤 Khách hàng: {item.userName || "Chưa có thông tin"}
       </Text>
       <Text style={styles.orderDetails}>
-        📧 Email: {item.userMail || "N/A"}
+        📧 Email: {item.userMail || "Chưa có thông tin"}
       </Text>
 
-      {item.status !== "Completed" && item.status !== "Rejected" && (
+      {item.status !== "Completed" && 
+       item.status !== "Hoàn thành" &&
+       item.status !== "Rejected" && 
+       item.status !== "Từ chối" && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, styles.acceptButton]}
@@ -157,7 +179,8 @@ export default function OrderStore({ navigation }) {
         </View>
       )}
     </View>
-  );
+    );
+  };
 
   if (loading && !refreshing) {
     return (

@@ -95,7 +95,7 @@ export default function Test({ navigation }) {
         console.log("Quiz đã gửi thành công", response.data);
         setFinished(true); // Đánh dấu quiz đã hoàn thành
         setAiFeedback(response.data.feedback); // Lưu phản hồi từ AI
-        Alert.alert("Success", "You have successfully submitted the quiz.");
+        Alert.alert("Thành công", "Bạn đã nộp bài quiz thành công.");
       } else {
         console.log("Lỗi: ", response.data.message);
       }

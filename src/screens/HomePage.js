@@ -20,8 +20,9 @@ const HomeScreen = ({ navigation }) => {
   const [stores, setStores] = useState([]);
   const [filteredStores, setFilteredStores] = useState([]);
   const [filterPrice, setFilterPrice] = useState("lowToHigh");
-  const [filterLocation, setFilterLocation] = useState("All");
+  const [filterLocation, setFilterLocation] = useState("Tất cả");
   const [filterSearch, setFilterSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Tất cả");
   const [selectedService, setSelectedService] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const role = useSelector((state) => state.auth.user?.role);
@@ -42,9 +43,50 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    let filtered = stores;
+  // Hàm xác định category của dịch vụ dựa trên tên
+  const getServiceCategory = (serviceName) => {
+    const name = serviceName.toLowerCase();
+    if (name.includes("cắt") || name.includes("tóc") || name.includes("hair")) {
+      return "Cắt tóc";
+    }
+    if (name.includes("massage") || name.includes("xoa bóp")) {
+      return "Massage";
+    }
+    if (name.includes("da") || name.includes("facial") || name.includes("chăm sóc da")) {
+      return "Chăm sóc da";
+    }
+    if (name.includes("nail") || name.includes("móng") || name.includes("sơn")) {
+      return "Nail";
+    }
+    if (name.includes("spa") || name.includes("thư giãn")) {
+      return "Spa";
+    }
+    if (name.includes("nhuộm") || name.includes("dye") || name.includes("màu")) {
+      return "Nhuộm tóc";
+    }
+    if (name.includes("uốn") || name.includes("permanent")) {
+      return "Uốn tóc";
+    }
+    return "Khác";
+  };
 
+  useEffect(() => {
+    let filtered = stores.map((store) => ({
+      ...store,
+      services: store.services || [],
+    }));
+
+    // Lọc theo category
+    if (selectedCategory !== "Tất cả") {
+      filtered = filtered.map((store) => {
+        const categoryServices = store.services.filter((service) =>
+          getServiceCategory(service.service_name) === selectedCategory
+        );
+        return { ...store, services: categoryServices };
+      });
+    }
+
+    // Lọc theo search
     if (filterSearch.trim()) {
       filtered = filtered
         .map((store) => {
@@ -62,12 +104,14 @@ const HomeScreen = ({ navigation }) => {
         .filter(Boolean);
     }
 
-    if (filterLocation !== "All") {
+    // Lọc theo location
+    if (filterLocation !== "Tất cả") {
       filtered = filtered.filter((store) =>
         store.address?.toLowerCase().includes(filterLocation.toLowerCase())
       );
     }
 
+    // Sắp xếp theo giá
     filtered.forEach((store) => {
       store.services?.sort((a, b) =>
         filterPrice === "lowToHigh"
@@ -76,8 +120,11 @@ const HomeScreen = ({ navigation }) => {
       );
     });
 
+    // Loại bỏ các store không có service nào
+    filtered = filtered.filter((store) => store.services?.length > 0);
+
     setFilteredStores(filtered);
-  }, [filterSearch, filterPrice, filterLocation, stores]);
+  }, [filterSearch, filterPrice, filterLocation, selectedCategory, stores]);
 
   const openServiceDetail = (serviceId) => {
     navigation.navigate("ProductDetail", { serviceId });
@@ -144,6 +191,42 @@ const HomeScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
+        </View>
+
+        {/* Bộ lọc category */}
+        <View style={styles.categoryFilterSection}>
+          <Text style={styles.categoryFilterLabel}>Danh mục dịch vụ:</Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryScrollContent}
+          >
+            {categories.map((category) => (
+              <TouchableOpacity
+                key={category.id}
+                style={[
+                  styles.categoryChip,
+                  selectedCategory === category.name && styles.selectedCategoryChip,
+                ]}
+                onPress={() => setSelectedCategory(category.name)}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={category.icon}
+                  size={18}
+                  color={selectedCategory === category.name ? COLORS.WHITE : COLORS.PRIMARY}
+                />
+                <Text
+                  style={[
+                    styles.categoryChipText,
+                    selectedCategory === category.name && styles.selectedCategoryChipText,
+                  ]}
+                >
+                  {category.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
         {/* Bộ lọc giá */}

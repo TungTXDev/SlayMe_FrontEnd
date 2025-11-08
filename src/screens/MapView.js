@@ -28,7 +28,7 @@ export default function MapViewScreen({ navigation }) {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission to access location was denied");
+        Alert.alert("Thông báo", "Quyền truy cập vị trí đã bị từ chối");
         return;
       }
       let currentLocation = await Location.getCurrentPositionAsync({});
@@ -67,7 +67,7 @@ export default function MapViewScreen({ navigation }) {
     const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (cameraStatus !== "granted" || mediaLibraryStatus !== "granted") {
-      Alert.alert("The app needs permission to access your camera and photo library!");
+      Alert.alert("Thông báo", "Ứng dụng cần quyền truy cập camera và thư viện ảnh của bạn!");
       return false;
     }
     return true;
@@ -116,7 +116,7 @@ export default function MapViewScreen({ navigation }) {
           }}
           showsUserLocation={true}
         >
-          <Marker coordinate={location} title="Current Location" onPress={handleMarkerPress} />
+          <Marker coordinate={location} title="Vị trí hiện tại" onPress={handleMarkerPress} />
         </MapView>
       )}
 
@@ -150,7 +150,7 @@ export default function MapViewScreen({ navigation }) {
                 contentContainerStyle={styles.imageListContent}
               />
             ) : (
-              <Text style={styles.noImagesText}>No images yet. Please check-in at this location!</Text>
+              <Text style={styles.noImagesText}>Chưa có hình ảnh. Vui lòng check-in tại vị trí này!</Text>
             )}
           </View>
         </View>
@@ -177,7 +177,7 @@ export default function MapViewScreen({ navigation }) {
                 contentContainerStyle={styles.imageListContent}
               />
             ) : (
-              <Text style={styles.noImagesText}>No images yet. Please check-in at this location!</Text>
+              <Text style={styles.noImagesText}>Chưa có hình ảnh. Vui lòng check-in tại vị trí này!</Text>
             )}
           </View>
         </View>

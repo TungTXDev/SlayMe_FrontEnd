@@ -79,21 +79,50 @@ function Main() {
 
       {role === 2 && (
         <>
-          <Tab.Screen name="MyStore" component={MyStore} />
-          <Tab.Screen name="OrderStore" component={OrderStore} />
+          <Tab.Screen 
+            name="MyStore" 
+            component={MyStore} 
+            options={{ tabBarLabel: "Cửa hàng" }}
+          />
+          <Tab.Screen 
+            name="OrderStore" 
+            component={OrderStore} 
+            options={{ tabBarLabel: "Đơn hàng" }}
+          />
         </>
       )}
       {role === 3 && (
         <>
-          <Tab.Screen name="Censor" component={Censor} />
-          <Tab.Screen name="CheckList" component={CheckList} />
+          <Tab.Screen 
+            name="Censor" 
+            component={Censor} 
+            options={{ tabBarLabel: "Kiểm duyệt" }}
+          />
+          <Tab.Screen 
+            name="CheckList" 
+            component={CheckList} 
+            options={{ tabBarLabel: "Danh sách" }}
+          />
         </>
       )}
 
       {/* Đổi tên từ "Home" thành "HomeTab" để tránh xung đột */}
-      <Tab.Screen screenOptions={{ headerShown: false }} name="HomeTab" component={HomeStack} />
-      <Tab.Screen name="ChatBot" component={ChatBot} />
-      <Tab.Screen name="Profile" component={ProfileStack} />
+      <Tab.Screen 
+        screenOptions={{ headerShown: false }} 
+        name="HomeTab" 
+        component={HomeStack} 
+        options={{ tabBarLabel: "Trang chủ" }}
+      />
+      <Tab.Screen 
+        name="ChatBot" 
+        component={ChatBot} 
+        options={{ tabBarLabel: "Trợ lý" }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileStack} 
+        options={{ tabBarLabel: "Cá nhân" }}
+      />
     </Tab.Navigator>
   );
 }

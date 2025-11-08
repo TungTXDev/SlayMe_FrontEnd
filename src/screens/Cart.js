@@ -11,7 +11,8 @@ export default function Cart({ navigation }) {
     error, 
     removeFromCart, 
     getTotalPrice, 
-    getTotalItems 
+    getTotalItems,
+    refreshCart
   } = useCart();
 
   const handleRemoveItem = (itemId) => {
@@ -33,6 +34,20 @@ export default function Cart({ navigation }) {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <Text style={styles.loadingText}>{MESSAGES.LOADING}</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={refreshCart}
+        >
+          <Text style={styles.retryButtonText}>Thử lại</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -64,13 +79,15 @@ export default function Cart({ navigation }) {
           {cartItems.map((item) => (
             <View key={item.id} style={styles.item}>
               <Image
-                source={item.image}
+                source={item.image || require('../../assets/massage.png')}
                 style={styles.itemImage}
               />
               <View style={styles.itemDetails}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemPrice}>Giá: {formatPrice(item.price)}</Text>
-                <Text style={styles.itemTime}>Thời gian: {item.time}</Text>
+                <Text style={styles.itemName}>{item.name || 'Dịch vụ'}</Text>
+                <Text style={styles.itemPrice}>Giá: {formatPrice(item.price || 0)}</Text>
+                {item.time && (
+                  <Text style={styles.itemTime}>Thời gian: {item.time}</Text>
+                )}
                 {item.storeName && (
                   <Text style={styles.itemStore}>Cửa hàng: {item.storeName}</Text>
                 )}
@@ -268,5 +285,22 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: FONTS.REGULAR,
     color: COLORS.GRAY,
+  },
+  errorText: {
+    fontSize: FONTS.REGULAR,
+    color: COLORS.ERROR,
+    marginBottom: SPACING.MEDIUM,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: COLORS.PRIMARY,
+    paddingHorizontal: SPACING.LARGE,
+    paddingVertical: SPACING.MEDIUM,
+    borderRadius: SPACING.SMALL,
+  },
+  retryButtonText: {
+    fontSize: FONTS.REGULAR,
+    color: COLORS.WHITE,
+    fontWeight: 'bold',
   },
 });
